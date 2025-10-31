@@ -17,17 +17,30 @@ BOT_TOKEN = os.getenv("BOT_TOKEN")
 
 # === 1. Віддає mp4-лінк за file_id (як раніше)
 @app.get("/get_video/{file_id}")
-def get_video(file_id: str):
-    r = requests.get(
-        f"https://api.telegram.org/bot{BOT_TOKEN}/getFile",
-        params={"file_id": file_id},
-        timeout=30
-    ).json()
-    if not r.get("ok"):
-        return JSONResponse({"error": "not_found"})
-    fp = r["result"]["file_path"]
-    url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{fp}"
-    return {"url": url}
+async def get_video(file_id: str):
+    import requests
+    import os
+
+    BOT_TOKEN = os.getenv("BOT_TOKEN")
+    if not BOT_TOKEN:
+        return {"error": "missing_token"}
+
+    # Запит до Telegram API
+    tg_url = f"https://api.telegram.org/bot{BOT_TOKEN}/getFile?file_id={file_id}"
+    r = requests.get(tg_url)
+    data = r.json()
+
+    # Якщо Telegram повернув шлях до файлу
+    if data.get("ok") and data["result"].get("file_path"):
+        file_path = data["result"]["file_path"]
+        full_url = f"https://api.telegram.org/file/bot{BOT_TOKEN}/{file_path}"
+        print("🎬 Отримано посилання:", full_url)
+        return {"url": full_url}
+
+    # Якщо файл не знайдено
+    print("⚠️ Не знайдено file_path у відповіді Telegram:", data)
+    return {"error": "not_found"}
+
 
 
 # === 2. Webhook для отримання нових відео ===
