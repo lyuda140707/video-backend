@@ -1,5 +1,6 @@
 from fastapi import FastAPI, Request
 from fastapi.responses import JSONResponse
+from fastapi.middleware.cors import CORSMiddleware   # ✅ Додай цей рядок
 import os, requests, datetime
 
 app = FastAPI()
