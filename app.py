@@ -3,6 +3,14 @@ from fastapi.responses import JSONResponse
 import os, requests, datetime
 
 app = FastAPI()
+# ✅ Додаємо CORS
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 BOT_TOKEN = os.getenv("BOT_TOKEN")
 
